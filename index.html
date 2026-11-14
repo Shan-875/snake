@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>SNAKE — Classic Arcade</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="noise" aria-hidden="true"></div>
+    <main class="arcade">
+      <header class="brand">
+        <p class="brand-mark">3310 EDITION</p>
+        <h1>SNAKE</h1>
+        <p class="subtitle">CLASSIC ARCADE GAME</p>
+      </header>
+
+      <section class="phone" aria-label="Nokia-inspired snake arcade">
+        <div class="earpiece"></div>
+        <div class="lcd-shell">
+          <div class="lcd">
+            <div class="hud">
+              <div class="hud-block">
+                <span>SCORE</span>
+                <strong id="score">0000</strong>
+              </div>
+              <div class="hud-block">
+                <span>HIGH</span>
+                <strong id="high">0000</strong>
+              </div>
+              <div class="hud-block">
+                <span>SPEED</span>
+                <strong id="speed">1</strong>
+              </div>
+              <div class="hud-block">
+                <span>MODE</span>
+                <strong id="mode">MANUAL</strong>
+              </div>
+            </div>
+            <div class="stage">
+              <canvas id="board" width="384" height="384" aria-label="Snake game board"></canvas>
+              <div class="scanlines" aria-hidden="true"></div>
+              <div class="lcd-glow" aria-hidden="true"></div>
+              <div id="auto-flag" class="auto-flag hidden">AUTOPLAY ACTIVE</div>
+              <div id="overlay" class="overlay">
+                <p class="overlay-kicker" id="overlay-kicker">NOKIA CLASSIC</p>
+                <h2 id="overlay-title">SNAKE</h2>
+                <p id="overlay-copy">Eat. Grow. Survive.</p>
+                <div id="overlay-stats" class="overlay-stats hidden"></div>
+                <p class="blink" id="overlay-hint">PRESS START</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="soft-row">
+          <button type="button" id="btn-start" class="soft-btn">START</button>
+          <button type="button" id="btn-pause" class="soft-btn">PAUSE</button>
+          <button type="button" id="btn-restart" class="soft-btn">RESTART</button>
+        </div>
+
+        <div class="controls">
+          <div class="side-btns">
+            <button type="button" id="btn-autoplay" class="pill">AUTOPLAY</button>
+            <button type="button" id="btn-demo" class="pill">DEMO</button>
+            <button type="button" id="btn-sound" class="pill">SOUND ON</button>
+          </div>
+          <div class="dpad" aria-label="Direction pad">
+            <button type="button" class="pad-btn pad-up" data-dir="up" aria-label="Up">▲</button>
+            <button type="button" class="pad-btn pad-left" data-dir="left" aria-label="Left">◀</button>
+            <button type="button" class="pad-btn pad-ok" id="pad-ok" aria-label="Start or pause">●</button>
+            <button type="button" class="pad-btn pad-right" data-dir="right" aria-label="Right">▶</button>
+            <button type="button" class="pad-btn pad-down" data-dir="down" aria-label="Down">▼</button>
+          </div>
+        </div>
+      </section>
+
+      <p class="help">
+        ARROWS / WASD TO STEER · P PAUSE · A AUTOPLAY · M MUTE
+      </p>
+    </main>
+    <script src="script.js"></script>
+  </body>
+</html>
