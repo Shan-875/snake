@@ -446,6 +446,25 @@
     return false;
   }
 
+  function winGame() {
+    state.running = false;
+    state.paused = false;
+    sfx("start");
+    if (state.score > state.high) {
+      state.high = state.score;
+      localStorage.setItem(STORAGE_HIGH, String(state.high));
+    }
+    showOverlay({
+      kicker: "BOARD CLEAR",
+      title: "YOU WIN",
+      copy: "The snake filled the screen.",
+      hint: "PRESS START",
+      stats: `SCORE ${pad(state.score)}<br>HIGH ${pad(state.high)}`,
+    });
+    updateHud();
+    scheduleDemo();
+  }
+
   function gameOver() {
     state.running = false;
     state.paused = false;
@@ -488,7 +507,7 @@
       sfx("eat");
       state.food = randomFood(state.snake);
       if (!state.food) {
-        gameOver();
+        winGame();
         return;
       }
     } else {
@@ -532,12 +551,16 @@
 
   function startGame(opts) {
     const demo = Boolean(opts && opts.demo);
+    const forceAuto = Boolean(opts && opts.auto);
+    const forceManual = Boolean(opts && opts.manual);
     clearDemoTimer();
     resetSnake();
     state.running = true;
     state.paused = false;
     state.demo = demo;
-    state.autoplay = demo || state.autoplay;
+    if (demo) state.autoplay = true;
+    else if (forceAuto) state.autoplay = true;
+    else if (forceManual) state.autoplay = false;
     state.mode = demo ? "DEMO" : state.autoplay ? "AUTOPLAY" : "MANUAL";
     hideOverlay();
     sfx("start");
@@ -570,11 +593,11 @@
 
   function queueDir(dir) {
     if (!dir) return;
-    if (state.demo) {
+    if (state.demo || state.autoplay) {
       state.demo = false;
       setAutoplay(false);
     }
-    if (!state.running || state.paused || state.autoplay) return;
+    if (!state.running || state.paused) return;
     if (!opposite(dir, state.dir)) state.queued = dir;
   }
 
@@ -592,10 +615,11 @@
     } else if (e.key === "r" || e.key === "R") {
       e.preventDefault();
       restart();
-    } else if (e.key === "a" || e.key === "A") {
+    } else if (e.key === "t" || e.key === "T") {
       e.preventDefault();
       setAutoplay(!(state.autoplay && !state.demo));
       sfx("click");
+      if (state.autoplay && !state.running) startGame({ demo: false, auto: true });
     } else if (e.key === "m" || e.key === "M") {
       e.preventDefault();
       toggleSound();
@@ -615,7 +639,7 @@
 
   btnStart.addEventListener("click", () => {
     ensureAudio();
-    startGame({ demo: false });
+    startGame({ demo: false, manual: true });
   });
   btnPause.addEventListener("click", () => {
     ensureAudio();
@@ -630,7 +654,7 @@
     const next = !(state.autoplay && !state.demo);
     setAutoplay(next);
     sfx("click");
-    if (next && !state.running) startGame({ demo: false });
+    if (next && !state.running) startGame({ demo: false, auto: true });
   });
   btnDemo.addEventListener("click", () => {
     ensureAudio();
@@ -653,14 +677,24 @@
       left: { x: -1, y: 0 },
       right: { x: 1, y: 0 },
     };
+    let touched = false;
     const apply = (event) => {
       event.preventDefault();
       ensureAudio();
-      if (!state.running) startGame({ demo: false });
+      if (!state.running) startGame({ demo: false, manual: true });
       queueDir(map[btn.dataset.dir]);
     };
-    btn.addEventListener("click", apply);
-    btn.addEventListener("touchstart", apply, { passive: false });
+    btn.addEventListener("touchstart", (event) => {
+      touched = true;
+      apply(event);
+    }, { passive: false });
+    btn.addEventListener("click", (event) => {
+      if (touched) {
+        touched = false;
+        return;
+      }
+      apply(event);
+    });
   });
 
   window.addEventListener("keydown", onKey);
@@ -683,5 +717,15 @@
   }
   scheduleDemo();
 
-  window.__snakeAI = { bfs, autoMove, simulate, canReachTail };
+  window.__snake = {
+    state,
+    tick,
+    startGame,
+    togglePause,
+    autoMove,
+    bfs,
+    hits,
+    speedLevel,
+    stepMs,
+  };
 })();
